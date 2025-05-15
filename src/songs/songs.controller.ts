@@ -13,6 +13,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('songs')
 export class SongsController {
@@ -28,18 +30,21 @@ export class SongsController {
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
-      limits: { fileSize: 2 * 1024 * 1024 }, // limit image size to 2MB [oai_citation:9‡medium.com](https://medium.com/@ggluopeihai/nestjs-uploading-pictures-8f25f84ad31e#:~:text=%40Post%28%27%2FuploadImage%27%29%20%40UseInterceptors%28FileInterceptor%28%27file%27%2C%20,file%29)
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
+          cb(null, uniqueName);
+        },
+      }),
     }),
   )
   async create(
     @Body() createSongDto: CreateSongDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    // When using FileInterceptor, the uploaded file info is available in 'file'
-    // The DTO will contain the text fields (name, artist) due to ValidationPipe
     if (!file) {
-      // Ideally, handle case when no file is provided
-      throw new Error('Image file is required');
+      file = { filename: 'default.webp' } as Express.Multer.File; // Example of assigning a default image
     }
     const { name, artist } = createSongDto;
     const fileName = file.filename; // Multer gives the stored file name

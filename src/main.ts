@@ -37,6 +37,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   // Serve the uploads directory statically at the '/uploads' route
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   app.use('/uploads', require('express').static(uploadPath)); // using express static [oai_citation:19‡medium.com](https://medium.com/@ggluopeihai/nestjs-uploading-pictures-8f25f84ad31e#:~:text=async%20function%20bootstrap%28%29%20,bootstrap)
 
   // (Optional) use global validation pipe, enable CORS, etc.
