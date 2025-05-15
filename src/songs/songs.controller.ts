@@ -9,6 +9,7 @@ import {
   UploadedFile,
   UseInterceptors,
   ParseUUIDPipe,
+  Put,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SongsService } from './songs.service';
@@ -53,6 +54,40 @@ export class SongsController {
     const newSong = await this.songsService.createSong(name, artist, imagePath);
     // Optionally, return the song data (or a DTO) – including an image URL for client usage.
     return newSong;
+  }
+
+  @Put(':id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
+          cb(null, uniqueName);
+        },
+      }),
+    }),
+  )
+  async update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() updateSongDto: CreateSongDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      file = { filename: 'default.webp' } as Express.Multer.File; // Example of assigning a default image
+    }
+    const { name, artist } = updateSongDto;
+    const fileName = file.filename; // Multer gives the stored file name
+    const imagePath = `uploads/${fileName}`; // relative path to serve the image
+    // Update the song with the new data
+    const updatedSong = await this.songsService.updateSong(
+      id,
+      name,
+      artist,
+      imagePath,
+    );
+    // Optionally, return the updated song data (or a DTO) – including an image URL for client usage.
+    return updatedSong;
   }
 
   @Delete(':id')

@@ -26,6 +26,23 @@ export class SongsService {
     });
   }
 
+  async updateSong(
+    id: string,
+    name: string,
+    artist: string,
+    imagePath: string,
+  ): Promise<Song> {
+    // Use Prisma to update the song record
+    return this.prisma.song.update({
+      where: { id },
+      data: {
+        name,
+        artist,
+        imageUrl: imagePath,
+      },
+    });
+  }
+
   async deleteSong(id: string): Promise<void> {
     // Attempt to delete; if song not found, Prisma will throw
     try {
