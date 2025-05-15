@@ -5,7 +5,7 @@ import { SongsController } from './songs.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule], // import PrismaModule to use PrismaService
+  imports: [PrismaModule],
   controllers: [SongsController],
   providers: [SongsService],
 })

@@ -23,7 +23,6 @@ export class SongsController {
 
   @Get()
   async findAll(): Promise<any> {
-    // Retrieve all songs
     const songs = await this.songsService.getAllSongs();
     return songs;
   }
@@ -45,14 +44,13 @@ export class SongsController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
-      file = { filename: 'default.webp' } as Express.Multer.File; // Example of assigning a default image
+      file = { filename: 'default.webp' } as Express.Multer.File;
     }
     const { name, artist } = createSongDto;
-    const fileName = file.filename; // Multer gives the stored file name
-    const imagePath = `uploads/${fileName}`; // relative path to serve the image
+    const fileName = file.filename;
+    const imagePath = `uploads/${fileName}`;
 
     const newSong = await this.songsService.createSong(name, artist, imagePath);
-    // Optionally, return the song data (or a DTO) – including an image URL for client usage.
     return newSong;
   }
 
@@ -74,25 +72,23 @@ export class SongsController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
-      file = { filename: 'default.webp' } as Express.Multer.File; // Example of assigning a default image
+      file = { filename: 'default.webp' } as Express.Multer.File;
     }
     const { name, artist } = updateSongDto;
-    const fileName = file.filename; // Multer gives the stored file name
-    const imagePath = `uploads/${fileName}`; // relative path to serve the image
-    // Update the song with the new data
+    const fileName = file.filename;
+    const imagePath = `uploads/${fileName}`;
     const updatedSong = await this.songsService.updateSong(
       id,
       name,
       artist,
       imagePath,
     );
-    // Optionally, return the updated song data (or a DTO) – including an image URL for client usage.
+
     return updatedSong;
   }
 
   @Delete(':id')
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    // ParseUUIDPipe will ensure the id param is a valid UUID, else throws 400 [oai_citation:10‡docs.nestjs.com](https://docs.nestjs.com/techniques/validation#:~:text=,%60ParseUUIDPipe) [oai_citation:11‡docs.nestjs.com](https://docs.nestjs.com/techniques/validation#:~:text=In%20addition%20to%20validating%20request,can%20use%20the%20following%20construct)
     await this.songsService.deleteSong(id);
     return { message: 'Song deleted successfully.' };
   }
