@@ -16,7 +16,6 @@ export class SongsService {
     artist: string,
     imagePath: string,
   ): Promise<Song> {
-    // Use Prisma to create a new song record
     return this.prisma.song.create({
       data: {
         name,
