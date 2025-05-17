@@ -44,11 +44,12 @@ export class SongsController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
-      file = { filename: 'default.webp' } as Express.Multer.File;
+      file = { filename: '' } as Express.Multer.File;
     }
+
     const { name, artist } = createSongDto;
     const fileName = file.filename;
-    const imagePath = `uploads/${fileName}`;
+    const imagePath = fileName ? `uploads/${fileName}` : '';
 
     const newSong = await this.songsService.createSong(name, artist, imagePath);
     return newSong;

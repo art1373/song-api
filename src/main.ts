@@ -38,6 +38,8 @@ async function bootstrap() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   app.use('/uploads', require('express').static(uploadPath));
 
+  app.enableCors();
+
   await app.listen(3000);
 }
 bootstrap();
