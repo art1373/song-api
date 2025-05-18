@@ -35,9 +35,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  app.use('/uploads', require('express').static(uploadPath));
-
   app.enableCors();
 
   const port = process.env.PORT || 4000;
