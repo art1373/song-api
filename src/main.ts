@@ -35,8 +35,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors();
-
+  app.enableCors({
+    origin: 'https://songs-client-ten.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
   const port = process.env.PORT || 3000;
 
   await app.listen(port);
