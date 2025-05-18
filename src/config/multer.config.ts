@@ -1,16 +1,22 @@
 // src/config/multer.config.ts
-
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
 export const multerConfig = {
   storage: diskStorage({
-    destination: './uploads', // Directory to store uploaded files
+    destination: './uploads',
     filename: (req, file, cb) => {
-      // Generate a unique filename
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-      const extension = extname(file.originalname);
-      cb(null, `${uniqueSuffix}${extension}`);
+      const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
+      cb(null, uniqueName);
     },
   }),
+  limits: {
+    fileSize: 2 * 1024 * 1024, // 2 MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  },
 };

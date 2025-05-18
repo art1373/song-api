@@ -14,78 +14,43 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { multerConfig } from '../config/multer.config';
+import { FileUploadService } from '../file-upload/file-upload.service';
+import { Song } from '@prisma/client';
 
 @Controller('songs')
 export class SongsController {
-  constructor(private readonly songsService: SongsService) {}
+  constructor(
+    private readonly songsService: SongsService,
+    private readonly fileUploadService: FileUploadService,
+  ) {}
 
   @Get()
-  async findAll(): Promise<any> {
-    const songs = await this.songsService.getAllSongs();
-    return songs;
+  async findAll(): Promise<Song[]> {
+    return this.songsService.getAllSongs();
   }
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
-          cb(null, uniqueName);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('image', multerConfig))
   async create(
     @Body() createSongDto: CreateSongDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!file) {
-      file = { filename: '' } as Express.Multer.File;
-    }
-
+    const imagePath = this.fileUploadService.validateAndGetPath(file);
     const { name, artist } = createSongDto;
-    const fileName = file.filename;
-    const imagePath = fileName ? `uploads/${fileName}` : '';
-
-    const newSong = await this.songsService.createSong(name, artist, imagePath);
-    return newSong;
+    return this.songsService.createSong(name, artist, imagePath);
   }
 
   @Put(':id')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
-          cb(null, uniqueName);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('image', multerConfig))
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateSongDto: CreateSongDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!file) {
-      file = { filename: 'default.webp' } as Express.Multer.File;
-    }
+    const imagePath = this.fileUploadService.validateAndGetPath(file);
     const { name, artist } = updateSongDto;
-    const fileName = file.filename;
-    const imagePath = `uploads/${fileName}`;
-    const updatedSong = await this.songsService.updateSong(
-      id,
-      name,
-      artist,
-      imagePath,
-    );
-
-    return updatedSong;
+    return this.songsService.updateSong(id, name, artist, imagePath);
   }
 
   @Delete(':id')

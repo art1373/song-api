@@ -3,6 +3,7 @@ import { SongsController } from './songs.controller';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
 import { NotFoundException } from '@nestjs/common';
+import { FileUploadService } from '../file-upload/file-upload.service';
 
 describe('SongsController', () => {
   let controller: SongsController;
@@ -23,6 +24,7 @@ describe('SongsController', () => {
           provide: SongsService,
           useValue: mockSongsService,
         },
+        FileUploadService,
       ],
     }).compile();
 

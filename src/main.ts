@@ -1,4 +1,3 @@
-// src/main.ts (snippet)
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { existsSync, mkdirSync } from 'fs';
@@ -32,6 +31,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('songs')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
