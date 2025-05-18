@@ -16,9 +16,9 @@ async function bootstrap() {
     }),
   );
 
-  const uploadPath = join(process.cwd(), 'uploads');
+  const uploadPath = join(__dirname, '..', 'uploads');
   if (!existsSync(uploadPath)) {
-    mkdirSync(uploadPath);
+    mkdirSync(uploadPath, { recursive: true });
   }
 
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
