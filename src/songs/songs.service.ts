@@ -1,4 +1,3 @@
-// src/songs/songs.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Song } from '@prisma/client';
