@@ -16,7 +16,15 @@ import { CreateSongDto } from './dto/create-song.dto';
 import { multerConfig } from '../config/multer.config';
 import { FileUploadService } from '../file-upload/file-upload.service';
 import { Song } from '@prisma/client';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('songs')
 @Controller('songs')
 export class SongsController {
   constructor(
@@ -25,12 +33,24 @@ export class SongsController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Retrieve all songs' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of songs retrieved successfully.',
+  })
   async findAll(): Promise<Song[]> {
     return this.songsService.getAllSongs();
   }
 
   @Post()
   @UseInterceptors(FileInterceptor('image', multerConfig))
+  @ApiOperation({ summary: 'Create a new song' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Song data',
+    type: CreateSongDto,
+  })
+  @ApiResponse({ status: 201, description: 'Song created successfully.' })
   async create(
     @Body() createSongDto: CreateSongDto,
     @UploadedFile() file: Express.Multer.File,
@@ -42,6 +62,13 @@ export class SongsController {
 
   @Put(':id')
   @UseInterceptors(FileInterceptor('image', multerConfig))
+  @ApiOperation({ summary: 'Update an existing song' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Updated song data',
+    type: CreateSongDto,
+  })
+  @ApiResponse({ status: 200, description: 'Song updated successfully.' })
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateSongDto: CreateSongDto,
@@ -53,6 +80,8 @@ export class SongsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a song' })
+  @ApiResponse({ status: 200, description: 'Song deleted successfully.' })
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.songsService.deleteSong(id);
     return { message: 'Song deleted successfully.' };
