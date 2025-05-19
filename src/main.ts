@@ -35,6 +35,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  // Enable CORS for dev un-comment this line
+  // app.enableCors();
+
+  // Enable CORS for production, comment this line if you want to use the dev CORS
   app.enableCors({
     origin: 'https://songs-client-ten.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
